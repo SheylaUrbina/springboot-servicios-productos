@@ -1,6 +1,7 @@
 package com.formacionbdi.springboot.app.productos.models.controllers;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,10 @@ import com.formacionbdi.springboot.app.productos.models.service.IProductoService
 public class ProductoController {
 	
 	@Autowired
-	private Environment env;//primera forma de usar puerto
+	private Environment env;//primera forma de usar puerto -org.springframework.core.env.Environment
 	
-	@Value("${server.port}")//segunda forma de validar el puerto que esta utilizando
-	private Integer port;
+	/*@Value("${server.port}")//segunda forma de validar el puerto que esta utilizando
+	private Integer port;*/
 	
 	@Autowired
 	private IProductoService productoService;
@@ -28,17 +29,26 @@ public class ProductoController {
 	@GetMapping("/listar")
 	public List<Producto> listar(){
 		return productoService.findAll().stream().map(producto -> {
-			//producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));//primera forma
-			producto.setPort(port);//segunda forma
+			producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));//primera forma
+			//producto.setPort(port);//segunda forma, agregando el @value("${server.port}")
 			return producto;
 		}).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/ver/{id}")
-	public Producto detalle(@PathVariable Long id) throws Exception {
+	public Producto detalle(@PathVariable Long id) throws InterruptedException {
+		
+		if(id.equals(10L)) {
+			throw new IllegalStateException("Producto no encontrado");
+		}
+		
+		if(id.equals(7L)) {
+			TimeUnit.SECONDS.sleep(5L);
+		}
+		
 		Producto producto = productoService.findById(id);
-		//producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
-		producto.setPort(port);
+		producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+		//producto.setPort(port);
 
 		/*boolean ok = false;
 		if (ok == false) {
