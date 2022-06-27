@@ -18,7 +18,7 @@ import com.formacionbdi.springboot.app.productos.models.service.IProductoService
 public class ProductoController {
 	
 	@Autowired
-	private Environment env;//primera forma de usar puerto -org.springframework.core.env.Environment
+	private Environment env;//primera forma de usar puerto -org.springframework.core.env.Environment, mediante est variable podemos obtener el puerto
 	
 	/*@Value("${server.port}")//segunda forma de validar el puerto que esta utilizando
 	private Integer port;*/
@@ -38,13 +38,13 @@ public class ProductoController {
 	@GetMapping("/ver/{id}")
 	public Producto detalle(@PathVariable Long id) throws InterruptedException {
 		
-		if(id.equals(10L)) {
+		/*if(id.equals(10L)) {
 			throw new IllegalStateException("Producto no encontrado");
 		}
 		
 		if(id.equals(7L)) {
 			TimeUnit.SECONDS.sleep(5L);
-		}
+		}*/
 		
 		Producto producto = productoService.findById(id);
 		producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
